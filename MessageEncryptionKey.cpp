@@ -45,7 +45,7 @@ const MessageEncryptionKey *MessageEncryptionKeyTable::AddKey(const MessageEncry
     memset(newKey, 0, sizeof(*newKey));
     newKey->keyId = keyData.keyId;
     newKey->sessionType = keyData.sessionType;
-    newKey->dataEncKey = (char *)wmem_alloc(wmem_epan_scope(), keyData.dataEncKeyLen);
+    newKey->dataEncKey = (unsigned char *)wmem_alloc(wmem_epan_scope(), keyData.dataEncKeyLen);
     memcpy(newKey->dataEncKey, keyData.dataEncKey, keyData.dataEncKeyLen);
     newKey->dataEncKeyLen = keyData.dataEncKeyLen;
     newKey->nextKey = existingKeys;

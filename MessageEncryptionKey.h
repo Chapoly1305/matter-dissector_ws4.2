@@ -16,7 +16,7 @@ class MessageEncryptionKey
 public:
     uint16_t keyId;
     uint8_t sessionType;
-    char *dataEncKey;
+    unsigned char *dataEncKey;
     guint dataEncKeyLen;
     MessageEncryptionKey *nextKey;
 

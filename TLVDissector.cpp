@@ -526,14 +526,12 @@ MATTER_ERROR TLVDissector::AddGenericTLVItem(proto_tree *tree, int hfindex, tvbu
     case kTLVType_UTF8String:
     {
         char *val;
+        char *buf;
         err = DupString(val);
         SuccessOrExit(err);
-        uint32_t escapedLen = escape_string_len(val);
-        char *escapedVal = (char *)malloc(escapedLen + 1);
-        escape_string(escapedVal, val);
-        AppendStringF(strBuf, strBufSize, "%s", escapedVal);
+        buf = ws_escape_string(NULL, val, TRUE);
+        AppendStringF(strBuf, strBufSize, "%s", buf);
         free(val);
-        free(escapedVal);
         break;
     }
     case kTLVType_ByteString:

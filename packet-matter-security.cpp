@@ -240,7 +240,7 @@ DeriveCASESessionKey(CASEExchangeRecord *caseExchangeRec, const uint8_t *sharedS
     memset(&keyData, 0, sizeof(keyData));
     keyData.keyId = caseExchangeRec->keyId;
     keyData.sessionType = caseExchangeRec->sessionType;
-    keyData.dataEncKey = (char *)sessionKeyData;
+    keyData.dataEncKey = (unsigned char *)sessionKeyData;
     keyData.dataEncKeyLen = kDataEncKeyLength_AES128CCM;
 
     return MessageEncryptionKeyTable::AddKey(keyData);

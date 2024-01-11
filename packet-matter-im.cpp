@@ -871,13 +871,13 @@ DissectIM(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree _U_, void *data _U
     }
 }
 
-static gboolean IMSubscriptionFilter_IsValid(struct _packet_info *pinfo)
+static gboolean IMSubscriptionFilter_IsValid(struct _packet_info *pinfo, void *user_data)
 {
     MatterMessageRecord *msgRec = MatterMessageTracker::FindMessageRecord(pinfo);
     return msgRec != NULL && msgRec->imSubscription != 0;
 }
 
-static gchar* IMSubscriptionFilter_BuildFilterString(struct _packet_info *pinfo)
+static gchar* IMSubscriptionFilter_BuildFilterString(struct _packet_info *pinfo, void *user_data)
 {
     MatterMessageRecord *msgRec = MatterMessageTracker::FindMessageRecord(pinfo);
     return g_strdup_printf(("im.subscription_id eq 0x%016" PRIX64), msgRec->imSubscription);
@@ -1121,7 +1121,7 @@ proto_register_matter_im(void)
     proto_register_field_array(proto_im, hf, array_length(hf));
     proto_register_subtree_array(ett, array_length(ett));
 
-    register_conversation_filter("im", "Matter IM Subscription", IMSubscriptionFilter_IsValid, IMSubscriptionFilter_BuildFilterString);
+    register_conversation_filter("im", "Matter IM Subscription", IMSubscriptionFilter_IsValid, IMSubscriptionFilter_BuildFilterString, NULL);
 }
 
 void
