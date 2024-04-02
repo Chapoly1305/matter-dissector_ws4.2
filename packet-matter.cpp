@@ -50,6 +50,7 @@
 #include "MessageEncryptionKey.h"
 #include "MatterMessageTracker.h"
 #include "UserEncryptionKeyPrefs.h"
+#include "UserNodeIdPrefs.h"
 
 using namespace matter;
 
@@ -151,6 +152,7 @@ TryDecryptMessage(tvbuff_t *tvb, int encDataOffset, packet_info *pinfo, const Ma
     bool success = false;
 
     if (MessageIsEncrypted(msgInfo)) {
+        MatterMessageInfo msgInfoCopy = msgInfo;
 
         dataLen = msgInfo.msgLen - encDataOffset;
         encData = (uint8_t *)tvb_memdup(pinfo->pool, tvb, encDataOffset, dataLen);
@@ -161,17 +163,35 @@ TryDecryptMessage(tvbuff_t *tvb, int encDataOffset, packet_info *pinfo, const Ma
         // successfully decrypts the message.
         const MessageEncryptionKey *keys = MessageEncryptionKeyTable::FindKeysById(msgInfo.sessionId);
         for (; keys != NULL && !success; keys = keys->nextKey) {
-            success = TryDecryptMessage_AES128CCM(encData, unencData, dataLen, aadData, encDataOffset, pinfo, msgInfo, *keys);
+            if (keys->srcNodeId && msgInfo.srcNodeId == 0) {
+                msgInfoCopy.srcNodeId = keys->srcNodeId;
+                success = TryDecryptMessage_AES128CCM(encData, unencData, dataLen, aadData, encDataOffset, pinfo, msgInfoCopy, *keys);
+            } else {
+                success = TryDecryptMessage_AES128CCM(encData, unencData, dataLen, aadData, encDataOffset, pinfo, msgInfo, *keys);
+            }
         }
 
         // If no matching key was found...
         if (!success) {
             MessageEncryptionKey userPrefKey;
+            MessageNodeId userPrefNodeId;
 
             // Search the keys in the user encryption key preferences table for a key that can decrypt the message.
             for (size_t i = 0; !success && i < UserEncryptionKeyPrefs::GetKeyCount(); i++) {
+                memset(&userPrefNodeId, 0, sizeof(userPrefNodeId));
                 userPrefKey = *UserEncryptionKeyPrefs::GetKey(i);
+                userPrefKey.srcNodeId = msgInfo.srcNodeId;
                 success = TryDecryptMessage_AES128CCM(encData, unencData, dataLen, aadData, encDataOffset, pinfo, msgInfo, userPrefKey);
+                if (!success && msgInfo.srcNodeId == 0) {
+                    for (size_t j = 0; !success && j < UserNodeIdPrefs::GetNodeIdCount(); j++) {
+                        userPrefNodeId = *UserNodeIdPrefs::GetNodeId(j);
+                        msgInfoCopy.srcNodeId = userPrefNodeId.NodeId;
+                        success = TryDecryptMessage_AES128CCM(encData, unencData, dataLen, aadData, encDataOffset, pinfo, msgInfoCopy, userPrefKey);
+                    }
+                    if (success) {
+                        userPrefKey.srcNodeId = userPrefNodeId.NodeId;
+                    }
+                }
             }
 
             // If a matching key was found, copy it to the main encryption key table, indexed by the key id.
@@ -728,6 +748,8 @@ proto_register_matter(void)
     register_init_routine(InitMatterDissector);
 
     UserEncryptionKeyPrefs::Init(prefs_matter);
+
+    UserNodeIdPrefs::Init(prefs_matter);
 
     MessageEncryptionKeyTable::Init();
 }

@@ -1,4 +1,12 @@
 /*
+ * @Author       : wilbur
+ * @Date         : 2024-03-29 12:42:10
+ * @LastEditTime : 2024-03-29 21:12:48
+ * @LastEditors  : wilbur
+ * @Description  : Please enter file description
+ * Copyright (c) 2024, All Rights Reserved.
+ */
+/*
  *  Copyright (c) 2023 Project CHIP Authors.
  * 
  *  Use of this source code is governed by a BSD-style
@@ -18,6 +26,7 @@ public:
     uint8_t sessionType;
     char *dataEncKey;
     guint dataEncKeyLen;
+    uint64_t srcNodeId;
     MessageEncryptionKey *nextKey;
 
     bool IsSameKey(const MessageEncryptionKey& otherKey) const;
