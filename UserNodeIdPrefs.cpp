@@ -25,29 +25,27 @@ uat_t *UserNodeIdPrefs::sUAT = NULL;
 MessageNodeId *UserNodeIdPrefs::sNodeIdList = NULL;
 guint UserNodeIdPrefs::sNodeIdCount = 0;
 
-UAT_BUFFER_CB_DEF(MessageNodeId, nodeId, MessageNodeId, dataNodeId,
-                  dataNodeIdLen);
+UAT_BUFFER_CB_DEF(MessageNodeId, nodeId, MessageNodeId, dataNodeId, dataNodeIdLen)
 
-static gboolean MessageNodeId_nodeId_check_cb(void *rec, const char *ptr,
-                                              unsigned len,
-                                              const void *chk_data,
-                                              const void *fld_data,
-                                              char **err) {
+static bool MessageNodeId_nodeId_check_cb(void *rec, const char *ptr,
+                                          unsigned len,
+                                          const void *chk_data,
+                                          const void *fld_data,
+                                          char **err) {
+  
   if (len != kNodeIdLength) {
-    *err = g_strdup("Invalid node id length");
-    return FALSE;
-  }
-
+     *err = g_strdup("Invalid node id length");
+     return FALSE;
+   }	
   return TRUE;
 }
 
-static void *MessageNodeId_copy_cb(void *dest, const void *orig,
-                                   size_t len _U_) {
-  MessageNodeId *d = (MessageNodeId *)dest;
-  MessageNodeId *o = (MessageNodeId *)orig;
 
+static void *MessageNodeId_copy_cb(void *dest, const void *orig, size_t len) {
+  MessageNodeId *d = (MessageNodeId *)dest;
+  const MessageNodeId *o = (const MessageNodeId *)orig;
   if (o->dataNodeIdLen) {
-    d->dataNodeId = (char *)g_memdup(o->dataNodeId, o->dataNodeIdLen);
+    d->dataNodeId = (unsigned char *)g_memdup2(o->dataNodeId, o->dataNodeIdLen);
     d->dataNodeIdLen = o->dataNodeIdLen;
     d->NodeId = ((uint64_t)(uint8_t)o->dataNodeId[0] << (7 * 8)) |
                 ((uint64_t)(uint8_t)o->dataNodeId[1] << (6 * 8)) |
@@ -61,14 +59,9 @@ static void *MessageNodeId_copy_cb(void *dest, const void *orig,
   return dest;
 }
 
-static gboolean MessageNodeId_update_cb(void *rec _U_, char **err _U_) {
-  MessageNodeId *r = (MessageNodeId *)rec;
-
-  // r->NodeId = 0;
-
+static bool MessageNodeId_update_cb(void *rec, char **err) {
   *err = NULL;
-
-  return TRUE;
+  return TRUE; 
 }
 
 static void MessageNodeId_free_cb(void *rec) {
@@ -97,11 +90,11 @@ void UserNodeIdPrefs::Init(module_t *prefs) {
                            "Matter message node id"),
       UAT_END_FIELDS};
 
-  sUAT = uat_new("Message Node Ids", sizeof(MessageNodeId),
-                 "matter_message_node_ids", TRUE, &sNodeIdList, &sNodeIdCount,
-                 UAT_AFFECTS_DISSECTION, NULL, MessageNodeId_copy_cb,
-                 MessageNodeId_update_cb, MessageNodeId_free_cb,
-                 MessageNodeId_post_update_cb, NULL, keyDataUATFields);
+    sUAT = uat_new("Message Node Ids", sizeof(MessageNodeId),
+               "matter_message_node_ids", TRUE, &sNodeIdList, &sNodeIdCount,
+               UAT_AFFECTS_DISSECTION, NULL, MessageNodeId_copy_cb,
+               MessageNodeId_update_cb, MessageNodeId_free_cb,
+               MessageNodeId_post_update_cb, NULL, keyDataUATFields);
 
   prefs_register_uat_preference(prefs, "message_node_ids", "Message Node Ids",
                                 "A table of node ids for Matter messages",

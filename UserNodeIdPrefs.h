@@ -23,7 +23,7 @@ enum { kNodeIdLength = 8 };
 
 class MessageNodeId {
  public:
-  char *dataNodeId;
+  unsigned char *dataNodeId;
   guint dataNodeIdLen;
   uint64_t NodeId;
   MessageNodeId *nextId;
