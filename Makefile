@@ -74,8 +74,8 @@ LDFLAGS += -Wl,-soname=$(PLUGIN_NAME).so -Wl,-Map -Wl,$(PLUGIN_NAME).map -Wl,--c
 endif
 
 DISSECTOR_SRCS := packet-matter.cpp packet-matter-decrypt.cpp packet-matter-echo.cpp packet-matter-common.cpp packet-matter-im.cpp packet-matter-security.cpp
-SRCS := $(DISSECTOR_SRCS) $(MATTER_SRCS) TLVDissector.cpp MatterMessageTracker.cpp MessageEncryptionKey.cpp UserEncryptionKeyPrefs.cpp HKDF.c
-HEADERS = moduleinfo.h  packet-matter.h packet-matter-decrypt.h TLVDissector.h MatterMessageTracker.h MessageEncryptionKey.h UserEncryptionKeyPrefs.h HKDF.h
+SRCS := $(DISSECTOR_SRCS) $(MATTER_SRCS) TLVDissector.cpp MatterMessageTracker.cpp MessageEncryptionKey.cpp UserEncryptionKeyPrefs.cpp UserNodeIdPrefs.cpp HKDF.c
+HEADERS = moduleinfo.h  packet-matter.h packet-matter-decrypt.h TLVDissector.h MatterMessageTracker.h MessageEncryptionKey.h UserEncryptionKeyPrefs.h UserNodeIdPrefs.h HKDF.h
 OBJS := $(foreach src, $(SRCS), $(src:.c=.o))
 OBJS := $(foreach src, $(OBJS), $(src:.cpp=.o))
 

@@ -64,6 +64,7 @@ MessageEncryptionKey_update_cb(void *rec _U_, char **err _U_)
 
     r->keyId = matter::MatterSessionId::kNone;
     r->sessionType = matter::kMatterEncryptionType_AES128CCM;
+    r->srcNodeId = 0;
 
     *err = NULL;
 
@@ -123,5 +124,6 @@ void UserEncryptionKeyPrefs::Init(module_t* prefs)
     for (guint i = 0; i < sKeyCount; i++) {
         sKeyList[i].keyId = matter::MatterSessionId::kNone;
         sKeyList[i].sessionType = matter::kMatterEncryptionType_AES128CCM;
+        sKeyList[i].srcNodeId = 0;
     }
 }
