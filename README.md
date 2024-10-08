@@ -55,44 +55,26 @@ Users should also be aware that the Matter dissector may have bugs that may caus
 
 
 ## Installation
-The current version of the Matter Wireshark plugin only runs on linux and requires Wireshark 3.6 or later.  This version is offered as a standard package on Ubuntu 18 and gLinux.  For older versions of Ubuntu, please see Upgrading Wireshark on Ubuntu below.
+The current version of the Matter Wireshark plugin only runs on linux and requires Wireshark 4.2, does NOT work on 4.4 yet.
 
 Installing the Wireshark plugin is as simple as copying the shared library file into your local plugins directory:
 
-    mkdir -p ${HOME}/.local/lib/wireshark/plugins/3.6/epan
-    cp matter-dissector.so ${HOME}.local/lib/wireshark/plugins/3.6/epan
-    chmod 700 ${HOME}/.local/lib/wireshark/plugins/3.6/epan/matter-dissector.so
-
-## Upgrading Wireshark on Ubuntu
-The Wireshark team maintains a PPA for Wireshark releases that have been back-ported to older Ubuntu distros: https://launchpad.net/~wireshark-dev/+archive/ubuntu/stable.
-
-Users can run the following commands to install/upgrade their Wireshark installation to the latest version:
-
-    sudo add-apt-repository ppa:wireshark-dev/stable
-    sudo apt-get update
-    sudo apt-get install wireshark
-
+    mkdir -p ${HOME}/.local/lib/wireshark/plugins/4.2/epan
+    cp matter-dissector.so ${HOME}.local/lib/wireshark/plugins/4.2/epan
+    chmod 700 ${HOME}/.local/lib/wireshark/plugins/4.2/epan/matter-dissector.so
 
 ## Bulding the Matter Wireshark Plugin
-### Install dependencies 
 
-Install dependencies on Linux:
+### Build Wireshark
+Again, you need to use exact Wireshark 4.2, the 4.4 is known not compatiable.
 
-    sudo apt-get build-dep wireshark
-
-Install dependencies on Mac:
-
-     *** not tested on Mac yet ***
-
-### Build Wireshark includes
+You may refer to [syneart/build_wireshark.sh](https://gist.github.com/syneart/2d30c075c140624b1e150c8ea318a978) to prepare the build environment. The script is not maintained by me, so use it with caution.
 
 Building the Matter Wireshark plugin requires access to a Wireshark source tree that has been built, or at least prepared for building.  This can be accompished as follows:
 
-    sudo apt-get install -y build-essential git cmake flex bison qttools5-dev qttools5-dev-tools libqt5svg5-dev qtmultimedia5-dev libpcap-dev libc-ares-dev libgcrypt20-dev libglib2.0-dev libpcre2-dev libnghttp2-dev libqt5core5a
-
     git clone https://gitlab.com/wireshark/wireshark.git
     cd wireshark
-    git checkout release-3.6
+    git checkout release-4.2
     mkdir build
     cd build
     cmake ..
